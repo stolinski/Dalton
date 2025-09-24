@@ -8,9 +8,9 @@ tools:
   write: true
   edit: true
   bash: false
-  context7*: false
-  svelte5*: false
-  sentry*: false
+  context7: false
+  svelte5: false
+  sentry: false
 permission:
   edit: ask
   bash: deny
@@ -55,11 +55,14 @@ Set up the minimum project metadata needed for agents to adapt to the repo's tec
 3. Create these folders if missing:
 
    - .opencode/templates/
+   - planning/
    - planning/phases/
    - planning/archive/
    - lib_notes/
 
 4. Create .gitkeep files in any folders above that are empty.
+
+5. Only create `planning/engineering-decisions.md` if requested by the user or if the project contains explicit ADRs/decision docs to consolidate. When creating, use `/Users/scotttolinski/.config/opencode/templates/ENGINEERING_DECISIONS_TEMPLATE.md` as the source.
 
 5. Log a gentle note if planning/roadmap.md is missing:
 

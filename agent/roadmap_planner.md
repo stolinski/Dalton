@@ -8,9 +8,9 @@ tools:
   write: true
   edit: true
   bash: false
-  context7*: false
-  svelte5*: false
-  sentry*: false
+  context7: false
+  svelte5: false
+  sentry: false
 permission:
   edit: ask
   bash: deny

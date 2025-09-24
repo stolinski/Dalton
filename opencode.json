@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["./CODESTYLE.md", "./GITHUB.md", "./SVELTE.md"],
   "mcp": {
     "context7": {
       "enabled": true,

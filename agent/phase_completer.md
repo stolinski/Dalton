@@ -45,3 +45,9 @@ Output rules
 
 - Write files and stop. No conversational summaries.
 - If any validation fails, write a brief FAILURE report to stdout (one line per failing check) and do not archive.
+
+Bash safety
+
+- Deny: sudo (never elevate privileges)
+- Always ask before executing: rm -rf, chmod/chown, moving files outside the workspace, curl/wget to external hosts, docker/kubectl
+- Prefer CI-friendly flags; no background daemons; keep commands scoped to the repo

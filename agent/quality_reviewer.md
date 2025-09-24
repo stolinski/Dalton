@@ -1,7 +1,7 @@
 ---
 description: "Quality/diff reviewer; small safe refactors; no external docs."
 mode: subagent
-model: anthropic/claude-sonnet-4-20250514
+model: github-copilot/gpt-5
 temperature: 0.1
 tools:
   read: true

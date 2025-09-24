@@ -8,9 +8,9 @@ tools:
   write: true
   edit: true
   bash: true
-  context7*: true
-  svelte5*: true
-  sentry*: true
+  context7: true
+  svelte5: true
+  sentry: true
 permission:
   edit: allow
   bash: ask
@@ -27,6 +27,7 @@ Scope
 Conventions
 
 - ESM; snake_case variables; minimal deps; native fetch.
+- If `planning/engineering-decisions.md` exists, treat (Status=Active, Scope=Project) entries as binding constraints unless the current phase explicitly overrides them. Otherwise, use `.opencode/project.yaml` and the phase “Key Decisions”.
 - Avoid writing CSS unless explicitly requested; prefer existing tokens/utilities if present.
 
 Verification
@@ -43,3 +44,9 @@ Outputs
 Failure discipline
 
 - If the framework or API remains ambiguous, emit SPEC_GAP with precise questions and stop.
+
+Bash safety
+
+- Deny: sudo (never elevate privileges)
+- Always ask before executing: rm -rf, chmod/chown, moving files outside the workspace, curl/wget to external hosts, docker/kubectl
+- Prefer CI-friendly flags; no background daemons; keep commands scoped to the repo

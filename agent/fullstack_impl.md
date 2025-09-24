@@ -8,9 +8,9 @@ tools:
   write: true
   edit: true
   bash: true
-  context7*: true
-  svelte5*: true
-  sentry*: true
+  context7: true
+  svelte5: true
+  sentry: true
 permission:
   edit: allow
   bash: ask
@@ -29,6 +29,7 @@ Stack resolution (in order)
    - server: one of [node, bun, deno, none]
    - data: one of [drizzle, prisma, knex, raw-sql, none]
    - tests: one of [vitest, jest, playwright, none]
+   - decisions: read `planning/engineering-decisions.md` when present; treat Active/Project entries as constraints
 2. Otherwise, auto-detect from repo signals:
    - web: `svelte.config.*`, `+page.*`, deps containing "svelte" → svelte; `next.config.*` or "react" → react; "vue" → vue
    - server: presence of `src/server/**`, deps "fastify", "express", "hono", or runtime files; "bun" in scripts → bun
@@ -39,6 +40,7 @@ Stack resolution (in order)
 Conventions (generic)
 
 - ESM only; Node ≥ 20 when Node is present; native fetch; snake_case; avoid axios.
+- If `planning/engineering-decisions.md` exists, treat entries with Status=Active and Scope=Project as binding constraints unless the current phase explicitly overrides them. Otherwise, prefer `.opencode/project.yaml` and the current phase’s “Key Decisions”.
 - Keep diffs scoped; add/adjust tests alongside code.
 - Update `planning/phases/phase_<n>.md` only when a task is completed/blocked (move row, add date). Never re-plan here.
 
@@ -62,3 +64,9 @@ Delegation:
   - @test_impl for heavy test scaffolding or hard-to-test logic
   - @quality_reviewer for a final cleanup/refactor-only pass before merging
 - Do not split tasks into subtasks. Delegate once, with context, and return when done.
+
+Bash safety
+
+- Deny: sudo (never elevate privileges)
+- Always ask before executing: rm -rf, chmod/chown, moving files outside the workspace, curl/wget to external hosts, docker/kubectl
+- Prefer CI-friendly flags; no background daemons; keep commands scoped to the repo

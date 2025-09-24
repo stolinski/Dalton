@@ -8,9 +8,9 @@ tools:
   write: true
   edit: true
   bash: false
-  context7*: false
-  svelte5*: false
-  sentry*: false
+  context7: false
+  svelte5: false
+  sentry: false
 permission:
   edit: ask
   bash: deny
@@ -22,12 +22,14 @@ Inputs:
 
 - ./planning/roadmap.md # if missing, create a minimal stub and proceed
 - /Users/scotttolinski/.config/opencode/templates/PHASE_TEMPLATE.md
+- Command input (optional): Inline Guidance to prefill sections (see Guidance below)
 
 Task:
 
 - Determine the next phase number by scanning ./planning/phases/phase\_\*.md
   (use sequential integers; zero-pad optional). Pick ONE upcoming roadmap item.
 - Emit exactly ONE new file: ./planning/phases/phase\_<n>.md based on the template.
+- If Inline Guidance is provided, incorporate it to prefill relevant sections.
 
 Constraints:
 
@@ -35,3 +37,21 @@ Constraints:
 - Fill: Scope, Active Tasks, Completed ✓ (seed p<n>-0 only if warranted), Key Decisions, Risks & Mitigations, Interfaces (stub), Performance Targets, Definition of Done.
 - Update ./planning/roadmap.md ONLY to link the new phase if missing. Do not re-plan or expand other items.
 - Do not consult external docs. Do not create more than one phase file. No summaries after edits.
+
+Guidance (optional):
+
+Pass an inline block in the command input. When present, use it to prefill sections without exceeding constraints. Prefer the user’s guidance over roadmap heuristics.
+
+Format examples:
+
+- Scope: ...
+- Key Decisions:
+  - ...
+- Constraints / Non-goals:
+  - ...
+- Risks:
+  - ...
+- Interfaces (hints):
+  - ...
+- Performance Targets:
+  - ...

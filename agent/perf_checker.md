@@ -1,7 +1,7 @@
 ---
 description: "Flexible performance checker. Auto-detects runners, reads targets, executes benches, validates thresholds, writes a short report."
 mode: primary
-model: gpt-5
+model: github-copilot/gpt-5
 temperature: 0.1
 tools:
   read: true
@@ -85,3 +85,9 @@ Output rules
 - If a check lacks a runnable command or parsable metric → add a SPEC_GAP line for that check and continue others.
 - Exit with FAILURE report (stdout) if any threshold fails; otherwise indicate SUCCESS (stdout).
 - Do not modify roadmap or phase files.
+
+Bash safety
+
+- Deny: sudo (never elevate privileges)
+- Always ask before executing: rm -rf, chmod/chown, moving files outside the workspace, curl/wget to external hosts, docker/kubectl
+- Prefer CI-friendly flags; no background daemons; keep commands scoped to the repo
