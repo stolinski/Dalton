@@ -3,7 +3,7 @@ description: Implement a single backend task (runtime-agnostic)
 agent: server_impl
 ---
 
-Read ./planning/phases/phase\_<n>.md. Implement task: {{input}}.
+Read ./planning/phases/phase\_<n>.md. Implement task: $ARGUMENTS.
 
 Runtime/lib:
 
@@ -15,3 +15,4 @@ Requirements:
 - ESM, native fetch, async/await; validate inputs; explicit errors.
 - Unknown APIs → verify, then implement.
 - Write unit tests for handlers/services; integration only for critical flows.
+- During implementation, run only targeted server tests (related files/tags) with minimal output redirected to `./logs/test-impl.log`. Do not run the full suite unless explicitly requested or required.

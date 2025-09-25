@@ -3,7 +3,7 @@ description: Write or update tests for a task/change (runner-agnostic)
 agent: test_impl
 ---
 
-Tests for: {{input}}.
+Tests for: $ARGUMENTS.
 
 Runner:
 

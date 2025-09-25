@@ -1,10 +1,21 @@
 # Roadmap
 
-## Themes / Epics
+### Phase 1 — <Title>
 
-- <Epic A>: <one-line goal>
-- <Epic B>: <one-line goal>
+- <1–3 scope bullets>
+
+### Phase 2 — <Title>
+
+- <1–3 scope bullets>
+ 
+## Active Phase
+
+- (link to ./planning/phases/phase_01.md once created; at most one active file in planning/phases/)
 
 ## Next Phase
 
-- (link to ./planning/phases/phase_01.md when created)
+- (next integer phase without a file yet; link when created)
+
+## Completed Phases
+
+- (links to ./planning/archive/phase_<n>.md in descending order)

@@ -13,7 +13,7 @@ tools:
   sentry: true
 permission:
   edit: allow
-  bash: ask
+  bash: allow
 ---
 
 Scope
@@ -35,6 +35,13 @@ Verification
 - Read local types/usages first; then Context7; then framework MCP _only if that framework is detected_.
 - Produce a minimal runnable example before adopting unknown APIs.
 
+Testing policy
+
+- Do not run full test suites at task start or mid-implementation.
+- Run only targeted UI tests when needed (related files/tags/components).
+- Prefer quiet/dot reporters with bail/fast-fail; redirect output to `./logs/test-impl.log` and rely on exit codes.
+- Run a full regression only when explicitly requested or as part of final verification.
+
 Outputs
 
 - UI components/routes wired into the app.
@@ -50,3 +57,20 @@ Bash safety
 - Deny: sudo (never elevate privileges)
 - Always ask before executing: rm -rf, chmod/chown, moving files outside the workspace, curl/wget to external hosts, docker/kubectl
 - Prefer CI-friendly flags; no background daemons; keep commands scoped to the repo
+
+Shell Safety & Scope
+
+- Bash allowed with a constrained allowlist.
+- Allowed commands:
+  - git: status, diff, add (specific paths), commit (only if explicitly directed), rev-parse, ls-files
+  - mkdir -p ./logs
+  - Test runners: bun/vitest/jest/playwright/npm|pnpm|yarn test with quiet/dot, bail, and redirection
+  - node or bun for small verification scripts
+  - rg/find limited to project root (avoid unscoped scans)
+- Forbidden:
+  - git push/pull/fetch/rebase/merge/reset --hard/checkout remote/tag creation/force (-f)/stash
+  - Network/package installs; docker/kubectl; chmod/chown/sudo; destructive rm outside temp dirs
+- Destructive ops: never delete user code; only remove a temp file you created in the same run.
+- Batch related git commands in a single shell invocation where practical.
+- Prefer read/edit tools instead of shell for file content access.
+- If a needed command is outside this allowlist, emit SPEC_GAP with the exact command and rationale.

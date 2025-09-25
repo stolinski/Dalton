@@ -12,7 +12,6 @@ If `.opencode/project.yaml` does not exist, create it.
 Also:
 
 - Create these folders if missing:
-  - `.opencode/templates/`
   - `planning/phases/`
   - `planning/archive/`
   - `lib_notes/`

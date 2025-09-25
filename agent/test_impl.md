@@ -10,7 +10,7 @@ tools:
   bash: true
 permission:
   edit: allow
-  bash: ask
+  bash: allow
 ---
 
 Stack detection
