@@ -39,7 +39,7 @@ Testing policy
 
 - Do not run full test suites at task start or mid-implementation.
 - Run only targeted UI tests when needed (related files/tags/components).
-- Prefer quiet/dot reporters with bail/fast-fail; redirect output to `./logs/test-impl.log` and rely on exit codes.
+- Prefer quiet reporters with bail/fast-fail; redirect output to `./logs/test-impl.log` and rely on exit codes. For UI specs with Playwright, you may use `--reporter=dot|line`. Do not use `--reporter=dot` with Bun tests.
 - Run a full regression only when explicitly requested or as part of final verification.
 
 Outputs

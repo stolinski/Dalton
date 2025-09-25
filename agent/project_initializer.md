@@ -100,12 +100,12 @@ Set up the minimum project metadata needed for agents to adapt to the repo's tec
 
 6. Log a gentle note if planning/roadmap.md is missing:
 
-   - “planning/roadmap.md not found. You can create it manually or run /renumber-roadmap next.”
+   - “planning/roadmap.md not found. You can create it manually or run /init-roadmap next.”
 
 ## Output rules
 
 - Do not modify any files besides `.opencode/project.yaml`, created folders, and `.gitkeep` placeholders.
-- Do not run `/renumber-roadmap`, create phase files, or emit summaries.
+- Do not run `/refresh-roadmap`, create phase files, or emit summaries.
 - Only write if something is missing or ambiguous.
 
 ## Implementation notes

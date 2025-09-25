@@ -1,6 +1,10 @@
-# Dalton - The Opencode Agents: Structured Workflow
+# Dalton - The Opencode Agents Structured Workflow
 
 This repository config defines a lean Plan → Implement → Verify → Complete flow.
+
+This is done via this flow initialize project → create roadmap → create detailed phase → do all phase tasks → complete phase → next phase
+
+Project contains a roadmap. Roadmap contains many phases. Phases contain many tasks.
 
 ## Typical Workflow (Golden Path)
 
@@ -8,19 +12,22 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 - `/init-project`
 
-2. Shape strategy
+2. Roadmap
 
-- Research-enabled: `/synthesize-roadmap "Goals: <bulleted goals>"` (creates/updates “### Phase <n> — <title>” sections in roadmap.md; no phase files)
-- Manual update: `/renumber-roadmap` (maintains/renumbers Phase sections; no file creation)
+   a. `/init-roadmap` - Initialize roadmap file (creates `planning/roadmap.md` from template with Active/Next/Completed sections; seeds two Phase skeletons; no phase files)
 
-3. Plan the phase
+   b. `/synthesize-roadmap "Goals: <bulleted goals>"` - Generate roadmap: (creates/updates `### Phase <n> — <title>` sections in `planning/roadmap.md`; no phase files)
+
+Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and repair the roadmap (does not create files)
+
+3. Phase
 
 - `/plan-phase` to create `planning/phases/phase_<n>.md` with tasks and targets
   - Accepts bare numbers: `/plan-phase 7` is equivalent to `Phase: 7`
   - Defaults to the next phase number derived from the roadmap Phase sections when not provided
   - Optional: include Inline Guidance in the command input to prefill sections (Scope, Key Decisions, Constraints, Risks, Interfaces hints, Performance Targets).
 
-4. Implement tasks
+4. Tasks
 
 - By ID: `/do-task p<n>-<id> [--only web|server|data] [--dry-run]`
 - Next task: `/do-next-task [--only web|server|data] [--dry-run]`
@@ -56,8 +63,9 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 ## Commands Overview
 
+- `init-roadmap`: Creates `planning/roadmap.md` from the embedded template, with Active, Next, and Completed sections. Seeds two Phase skeletons. Does not create phase files.
 - `synthesize-roadmap`: Scans repo, may use Context7, writes/updates `planning/roadmap.md` with proposed Phase sections (“### Phase <n> — <title>”), determined by your Goals/args and existing roadmap. It preserves existing phase sections and appends contiguously. No phase files.
-- `renumber-roadmap`: Maintains/renumbers Phase sections (normalizes decimals; preserves links). No research here; does not create or archive phase files.
+- `refresh-roadmap`: Normalizes Phase headings and repairs roadmap sections/links (Active/Next/Completed) after manual edits; does not create or archive phase files.
 - `plan-phase`: Creates `planning/phases/phase_<n>.md` with ≤15 tasks (IDs `p<n>-<seq>`, Priority, Status, Acceptance), Risks, Interfaces, Performance Targets, DoD. Accepts bare numbers (e.g., `7`).
 
 - `do-task`: ID-only; parses the task title/notes from the phase file; supports flags `--only` and `--dry-run`.
@@ -99,12 +107,12 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 - Built-in templates: Agents embed `PHASE_TEMPLATE`, `ROADMAP_TEMPLATE`, and `ENGINEERING_DECISIONS_TEMPLATE` so they work without repo-scoped template files.
 - Optional overrides: If present, commands prefer `./.opencode/templates/*.md` project overrides.
-- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/renumber-roadmap` normalizes to sequential integers and updates internal links. `/plan-phase` never creates fractional phase files.
+- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/refresh-roadmap` normalizes to sequential integers and updates internal links. `/plan-phase` never creates fractional phase files.
 - Collision handling: If `planning/phases/phase_<n>.md` exists, `/plan-phase` aborts without writing. Pass `Phase: <n>` to choose a different number or archive/rename the existing file first.
 
 ## Manual Normalization
 
-- Use `/renumber-roadmap` to update the roadmap and normalize phase headings.
+- Use `/refresh-roadmap` to update the roadmap and normalize/repair phase headings and links.
 - If headings contain decimals (e.g., `### Phase 7.5 — …`), the command renumbers to sequential integers and updates internal links.
 - The command edits only `planning/roadmap.md`. It does not create or modify phase files.
 - Recommended: keep phase numbers as integers; decimals are supported for input but are normalized away.
@@ -112,7 +120,7 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 ## Task Shaping & Adjustments
 
 - Shape concrete tasks in the phase file created by `/plan-phase`. Add/edit rows as needed; keep ≤15 active tasks.
-- Adjust strategy via `/renumber-roadmap` to update Phase sections and the next-phase link. Then run `/plan-phase` to create the next concrete phase.
+- Adjust strategy via `/refresh-roadmap` to update Phase sections and the next-phase link. Then run `/plan-phase` to create the next concrete phase.
 
 ## Performance Targets & Benchmarks
 

@@ -53,7 +53,7 @@ Testing policy
 
 - Do not run full test suites at task start or mid-implementation.
 - During implementation, run only targeted/related tests when needed to verify changes.
-- Prefer smoke/tagged/changed-only filters; use quiet/dot reporters with bail/fast-fail.
+- Prefer smoke/tagged/changed-only filters; use quiet reporters with bail/fast-fail. For Bun tests, omit `--reporter` or use `--reporter=junit` only. Use dot/line reporters only with runners that support them (e.g., Vitest/Jest/Playwright).
 - Redirect all test output to `./logs/test-impl.log` and rely on exit code; ensure `./logs` exists.
 - Run a full regression only when explicitly requested (e.g., completion/verification) or required by acceptance criteria.
 

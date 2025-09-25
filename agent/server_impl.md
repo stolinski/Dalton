@@ -41,7 +41,7 @@ Verification
 Testing policy
 
 - Avoid running full server test suites during implementation; use targeted tests only.
-- Prefer quiet/dot reporters with bail/fast-fail; redirect output to `./logs/test-impl.log` and rely on exit codes.
+- Prefer quiet reporters with bail/fast-fail; redirect output to `./logs/test-impl.log` and rely on exit codes. For Bun tests, omit `--reporter` or use `--reporter=junit` only. Use dot/line reporters only with runners that support them (e.g., Vitest/Jest/Playwright).
 - Full regression runs only on explicit request or final verification.
 
 Outputs

@@ -44,7 +44,7 @@ Shell Safety & Scope
 - Allowed commands:
   - git: status, diff, add (specific paths), commit (only if explicitly directed), rev-parse, ls-files
   - mkdir -p ./logs
-  - Test runners: bun/vitest/jest/playwright/npm|pnpm|yarn test with quiet/dot, bail, and output redirection
+  - Test runners: bun/vitest/jest/playwright/npm|pnpm|yarn test with quiet reporters, bail, and output redirection. For Bun, do not use `--reporter=dot`; use `--reporter=junit` or omit the flag. Use dot/line only with Vitest/Jest/Playwright.
   - node or bun for small verification scripts
   - rg/find limited to project root for locating files (avoid unscoped large scans)
 - Forbidden:

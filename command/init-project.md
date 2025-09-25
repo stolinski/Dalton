@@ -19,3 +19,6 @@ Also:
 
 Do **not** generate roadmap or phase files.  
 Only create metadata + folder structure.
+
+UX notes:
+- If `planning/roadmap.md` is missing after init, the next step is usually `/init-roadmap` to create it. Use `/refresh-roadmap` after any manual edits to normalize numbers and repair sections/links.

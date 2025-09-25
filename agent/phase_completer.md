@@ -36,7 +36,7 @@ Validation (must all succeed)
 3. **Tests**:
    - Use minimal output and bail/fast-fail to avoid excessive logs.
    - Prefer a project-defined test script in this order if present: `test:run`, then `test` (from package.json or similar tooling).
-   - If invoking Bun, prefer `bun test --bail --reporter=dot`.
+   - If invoking Bun, prefer `bun test --bail` and, if a machine-readable report is required, `--reporter=junit`. Do not use `--reporter=dot` with Bun.
    - If invoking Node/Jest/Vitest/Mocha, prefer a dot/quiet reporter and `--bail`.
    - If invoking pytest, prefer `-q` and `-x`; for Go, `go test -run` as needed; for Rust, `cargo test --quiet -- --test-threads=1 --fail-fast`.
    - Redirect all test output to `./logs/test.log` and rely on exit code only. Ensure `./logs/` exists.
