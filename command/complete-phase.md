@@ -33,9 +33,10 @@ Steps:
   - Next Phase: set to the smallest integer greater than <n> that's not present as a file; link if the file exists, else show the number.
   - Then commit these changes.
   - If both source and destination exist after move (copy detected), delete the source and log `ARCHIVE: removed duplicate source`. If deletion fails, STOP with: `FAILURE: archive move resulted in duplicate phase files; manual cleanup required.`
-  - Stage all changes in the repository (`git add -A`).
-  - Commit message: "complete phase <n>: archive and update roadmap".
-  - Do not push. If pre-commit hooks modify files, include them and amend the commit once.
-  - The agent must not perform any additional edits beyond the archiving and roadmap update steps; however, the commit can include any pre-existing changes in the working tree.
+  - Stage ONLY the relevant paths: `planning/roadmap.md` and `planning/archive/phase_<n>.md` (the deletion of `planning/phases/phase_<n>.md` is tracked by `git mv`).
+  - Do NOT stage logs or unrelated files. Avoid `git add -A`.
+  - Commit message: "complete phase <n>: archive and update roadmap"; do not push.
+  - If pre-commit hooks modify these files, stage the modified files and run a single `git commit --amend --no-edit`.
+  - The agent must not perform any additional edits beyond the archiving and roadmap update steps; do NOT include unrelated working tree changes in this commit.
 
 Do not modify any other phases. No summaries.

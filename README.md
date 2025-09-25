@@ -1,36 +1,43 @@
-# Opencode Agents: Structured Workflow
+# Dalton - The Opencode Agents: Structured Workflow
 
 This repository config defines a lean Plan → Implement → Verify → Complete flow.
 
 ## Typical Workflow (Golden Path)
 
-1) Initialize metadata
+1. Initialize metadata
+
 - `/init-project-meta`
 
-2) Shape strategy
-- Research-enabled: `/roadmap-synthesize "Goals: <bulleted goals>"` (creates/updates “### Phase <n> — <title>” sections in roadmap.md; no phase files)
-- Manual update: `/roadmap-plan` (maintains/renumbers Phase sections; no file creation)
+2. Shape strategy
 
-3) Plan the phase
+- Research-enabled: `/roadmap-synthesize "Goals: <bulleted goals>"` (creates/updates “### Phase <n> — <title>” sections in roadmap.md; no phase files)
+- Manual update: `/roadmap-phase-refresh` (maintains/renumbers Phase sections; no file creation)
+
+3. Plan the phase
+
 - `/phase-plan` to create `planning/phases/phase_<n>.md` with tasks and targets
   - Accepts bare numbers: `/phase-plan 7` is equivalent to `Phase: 7`
   - Defaults to the next phase number derived from the roadmap Phase sections when not provided
   - Optional: include Inline Guidance in the command input to prefill sections (Scope, Key Decisions, Constraints, Risks, Interfaces hints, Performance Targets).
 
-4) Implement tasks
+4. Implement tasks
+
 - By ID: `/implement-task p<n>-<id> [--only web|server|data] [--dry-run]`
 - Next task: `/implement-next-task [--only web|server|data] [--dry-run]`
 
-5) Tests and performance (optional)
+5. Tests and performance (optional)
+
 - Tests: `/test-task "<scope or module>"`
 - Perf scaffolding: `/perf-scaffold "<api|ui|db|module>"`
 - Perf run: `/perf-check "<api|ui|db>"`
 
-6) Review and complete
+6. Review and complete
+
 - Review: `/review-phase` (auto-detect active/next via roadmap), `/review-phase 7` (bare number), or `/review-phase planning/phases/phase_07.md`
 - Complete: `/complete-phase` (uses Active link), or `/complete-phase 7` (bare number), or `/complete-phase phase_<n>.md`
 
-7) Releases and CI (optional)
+7. Releases and CI (optional)
+
 - Changeset one-time setup: `/changesets-scaffold`
 - Create a changeset entry: `/changeset-create [--from main] [--packages ...] [--bump ...] [--summary ...] [--dry-run]`
 - One-time CI setup: `/ci-scaffold`
@@ -48,9 +55,9 @@ This repository config defines a lean Plan → Implement → Verify → Complete
   - Performance: Start with `/perf-scaffold` (no execution). `/perf-check` runs and writes reports; it may fail on threshold breaches.
 
 ## Commands Overview
- 
+
 - `roadmap-synthesize`: Scans repo, may use Context7, writes/updates `planning/roadmap.md` with proposed Phase sections (“### Phase <n> — <title>”), determined by your Goals/args and existing roadmap. It preserves existing phase sections and appends contiguously. No phase files.
-- `roadmap-plan`: Maintains/renumbers Phase sections (normalizes decimals; preserves links). No research here; does not create or archive phase files.
+- `roadmap-phase-refresh`: Maintains/renumbers Phase sections (normalizes decimals; preserves links). No research here; does not create or archive phase files.
 - `phase-plan`: Creates `planning/phases/phase_<n>.md` with ≤15 tasks (IDs `p<n>-<seq>`, Priority, Status, Acceptance), Risks, Interfaces, Performance Targets, DoD. Accepts bare numbers (e.g., `7`).
 
 - `implement-task`: ID-only; parses the task title/notes from the phase file; supports flags `--only` and `--dry-run`.
@@ -60,7 +67,7 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 - `perf-scaffold`: Generates minimal, commented benches; no execution or thresholds unless asked.
 - `perf-check`: Runs perf, compares to `.opencode/perf.yaml` or phase targets; writes `perf_reports/<timestamp>.md`; fails on threshold violations.
 - `review-phase`: Phase-scoped quality pass that runs typecheck/lint/tests (checks-first) and reviews provided code context (explicit files/contents). Accepts bare numbers or auto-detects Active/Next via roadmap. No git usage.
-- `complete-phase`: Validates DoD, tests, and perf if defined; archives the phase and updates roadmap. Accepts bare numbers or uses the Active link if not provided. Removes the completed Phase section from the roadmap, adds a link under Completed Phases, and updates Active/Next.
+- `complete-phase`: Validates DoD, tests, and perf if defined; archives the phase and updates roadmap. Accepts bare numbers or uses the Active link if not provided. Removes the completed Phase section from the roadmap, adds a link under Completed Phases, and updates Active/Next. Commits only changes to `planning/roadmap.md` and `planning/archive/phase_<n>.md`; does not stage unrelated files.
 
 ## Releases & CI (Optional)
 
@@ -71,10 +78,16 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 ## Agents & Permissions
 
-- `fullstack_impl` (primary): `edit: allow`, `bash: ask`; tools include `context7`, `svelte5`, `sentry` when relevant.
-- Subagents: `web_impl`, `server_impl`, `data_impl`, `test_impl` — edit allowed, bash ask.
-- Planning: `roadmap_planner` (edit allow, bash deny), `phase_planner`, `roadmap_synthesizer` — edit ask, bash deny.
-- Verification: `perf_checker` (edit ask, bash ask), `quality_reviewer` (read-only), `phase_completer` (edit ask, bash ask).
+- `fullstack_impl` (primary): `edit: allow`, `bash: allow`; tools include `context7`, `svelte5`, `sentry` when relevant.
+- Subagents: `web_impl`, `server_impl`, `data_impl`, `test_impl` — edit allowed, bash allow.
+- Planning:
+  - `roadmap_planner`: `edit: allow`, `bash: deny`
+  - `phase_planner`: `edit: ask`, `bash: deny`
+  - `roadmap_synthesizer`: `edit: allow`, `bash: deny`
+- Verification:
+  - `perf_checker`: `edit: ask`, `bash: ask`
+  - `quality_reviewer`: read-only
+  - `phase_completer`: `edit: ask`, `bash: allow`
 
 ## Engineering Decisions & Guidance
 
@@ -86,12 +99,12 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 - Built-in templates: Agents embed `PHASE_TEMPLATE`, `ROADMAP_TEMPLATE`, and `ENGINEERING_DECISIONS_TEMPLATE` so they work without repo-scoped template files.
 - Optional overrides: If present, commands prefer `./.opencode/templates/*.md` project overrides.
-- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/roadmap-plan` normalizes to sequential integers and updates internal links. `/phase-plan` never creates fractional phase files.
+- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/roadmap-phase-refresh` normalizes to sequential integers and updates internal links. `/phase-plan` never creates fractional phase files.
 - Collision handling: If `planning/phases/phase_<n>.md` exists, `/phase-plan` aborts without writing. Pass `Phase: <n>` to choose a different number or archive/rename the existing file first.
 
 ## Manual Normalization
 
-- Use `/roadmap-plan` to update the roadmap and normalize phase headings.
+- Use `/roadmap-phase-refresh` to update the roadmap and normalize phase headings.
 - If headings contain decimals (e.g., `### Phase 7.5 — …`), the command renumbers to sequential integers and updates internal links.
 - The command edits only `planning/roadmap.md`. It does not create or modify phase files.
 - Recommended: keep phase numbers as integers; decimals are supported for input but are normalized away.
@@ -99,7 +112,7 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 ## Task Shaping & Adjustments
 
 - Shape concrete tasks in the phase file created by `/phase-plan`. Add/edit rows as needed; keep ≤15 active tasks.
-- Adjust strategy via `/roadmap-plan` to update Phase sections and the next-phase link. Then run `/phase-plan` to create the next concrete phase.
+- Adjust strategy via `/roadmap-phase-refresh` to update Phase sections and the next-phase link. Then run `/phase-plan` to create the next concrete phase.
 
 ## Performance Targets & Benchmarks
 
@@ -119,6 +132,7 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 - Checks-first behavior: `review-phase` always runs typecheck, lint, and tests via project scripts when available. Provide code context (explicit files/contents) for review; no git involved.
 - Autodetect phase: If no argument is given, it reads `planning/roadmap.md` and follows the Active/Next link (e.g., `planning/phases/phase_07.md`).
 - Common SPEC_GAPs:
+
   - Active/Next not found: "SPEC_GAP: Active/Next phase not found in planning/roadmap.md. Provide a phase number (e.g., `/review-phase 7`) or a file path."
   - Phase file missing: "SPEC_GAP: Phase file not found: <path>."
   - Checks failed to execute: includes the attempted command and stderr summary.
@@ -130,6 +144,7 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 - Standard model: `github-copilot/gpt-5` across agents. `roadmap_planner` uses `github-copilot/gemini-2.0-flash` for faster normalization runs.
 - Tool keys in agent files are plain names (`context7`, `svelte5`, `sentry`). Use wildcards only in `opencode.json` to mass-toggle tool families.
+- Context7 API key is read from the environment as `CONTEXT7_API_KEY`. Ensure it's set locally and in CI before invoking features that rely on Context7.
 
 ## Example: .opencode/project.yaml (optional)
 
