@@ -83,8 +83,10 @@ Runners (examples to execute when present)
 Output rules
 
 - If a check lacks a runnable command or parsable metric → add a SPEC_GAP line for that check and continue others.
+- Write a per-run log to ./logs/perf.log (create if missing). Keep log ≤50KB by truncating older lines; stdout remains concise.
 - Exit with FAILURE report (stdout) if any threshold fails; otherwise indicate SUCCESS (stdout).
 - Do not modify roadmap or phase files.
+- Note: In phase completion flows, perf checks are opt-in and only run when ./.opencode/perf.yaml exists or the current phase declares Performance Targets. The standalone command (/check-perf) may be used to run perf checks manually regardless.
 
 Bash safety
 

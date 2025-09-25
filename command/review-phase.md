@@ -41,6 +41,7 @@ Code context:
 Checks (orchestrator; no git involved):
 - Skip entirely in --quick mode.
 - Otherwise, run Typecheck/Lint/Tests via project scripts; keep output minimal and attach summaries.
+- Write per-check logs to ./logs/typecheck.log, ./logs/lint.log, and ./logs/test.log (create ./logs if missing). Truncate each to ≤50KB; include only short summaries in the agent payload.
 - Hard timeouts: 10s per check; on timeout, set mode=no-block and continue with static review.
 - Echo: CHECKS_START / CHECKS_DONE (typecheck/lint/tests status)
 

@@ -86,8 +86,9 @@ Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and
 
 ## Agents & Permissions
 
-- `fullstack_impl` (primary): `edit: allow`, `bash: allow`; tools include `context7`, `svelte5`, `sentry` when relevant.
-- Subagents: `web_impl`, `server_impl`, `data_impl`, `test_impl` — edit allowed, bash allow.
+- `fullstack_impl` (primary): `edit: allow`, `bash: allow`; tools include `context7`, `svelte5`, `sentry` when relevant. Auto-delegates Svelte UI work to `svelte_pro` when Svelte/SvelteKit is detected.
+- Subagents: `web_impl`, `server_impl`, `data_impl`, `test_impl`, `svelte_pro` — edit allowed, bash allow.
+- `svelte_pro`: Specialized Svelte/SvelteKit implementer using Svelte MCP; honors project Svelte guidelines (`./.opencode/svelte-guidelines.(md|yaml)` or `./.opencode/project.yaml`) with global fallback to `templates/SVELTE_GUIDELINES.md`. Prefers Svelte 5 runes and idioms.
 - Planning:
   - `roadmap_planner`: `edit: allow`, `bash: deny`
   - `phase_planner`: `edit: ask`, `bash: deny`
@@ -107,13 +108,13 @@ Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and
 
 - Built-in templates: Agents embed `PHASE_TEMPLATE`, `ROADMAP_TEMPLATE`, and `ENGINEERING_DECISIONS_TEMPLATE` so they work without repo-scoped template files.
 - Optional overrides: If present, commands prefer `./.opencode/templates/*.md` project overrides.
-- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/refresh-roadmap` normalizes to sequential integers and updates internal links. `/plan-phase` never creates fractional phase files.
+- Phase numbers: Integers are recommended and preserved. `/refresh-roadmap` uses a stable renumber policy: existing integer phases keep their numbers; fractional headings (e.g., “Phase 7.5 — …”) are promoted to the next available integer and subsequent integer phases shift upward. It never restarts numbering at 1. `/plan-phase` never creates fractional phase files.
 - Collision handling: If `planning/phases/phase_<n>.md` exists, `/plan-phase` aborts without writing. Pass `Phase: <n>` to choose a different number or archive/rename the existing file first.
 
 ## Manual Normalization
 
 - Use `/refresh-roadmap` to update the roadmap and normalize/repair phase headings and links.
-- If headings contain decimals (e.g., `### Phase 7.5 — …`), the command renumbers to sequential integers and updates internal links.
+- If headings contain decimals (e.g., `### Phase 7.5 — …`), the command applies stable renumbering: preserve existing integer phase numbers; promote fractional phases to the next available integer and shift subsequent integers upward. Never restart numbering at 1. Internal links are updated accordingly.
 - The command edits only `planning/roadmap.md`. It does not create or modify phase files.
 - Recommended: keep phase numbers as integers; decimals are supported for input but are normalized away.
 
@@ -124,7 +125,7 @@ Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and
 
 ## Performance Targets & Benchmarks
 
-- Prefer `.opencode/perf.yaml` for thresholds; else use the phase’s “Performance Targets.”
+- Prefer `.opencode/perf.yaml` for thresholds; else use the phase’s “Performance Targets.” Checks are opt-in: if neither `.opencode/perf.yaml` nor phase targets exist, perf checks are skipped without SPEC_GAP.
 - Keep benchmarks opt-in with `/scaffold-perf`.
 
 ## Perf Tests Convention
@@ -164,8 +165,8 @@ web:
   framework: sveltekit
   conventions:
     events:
-      prefer: "on:"
-      disallow: ["onclick", "onchange"]
+      prefer: "onclick"
+      disallow: ["on:", "onchange"]
     classDirectives:
       prefer: true
     bindings:

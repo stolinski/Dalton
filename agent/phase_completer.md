@@ -41,7 +41,7 @@ Validation (must all succeed)
    - If invoking pytest, prefer `-q` and `-x`; for Go, `go test -run` as needed; for Rust, `cargo test --quiet -- --test-threads=1 --fail-fast`.
    - Redirect all test output to `./logs/test.log` and rely on exit code only. Ensure `./logs/` exists.
    - Must exit 0. On failure, print exactly one line: `FAILURE: tests failed. See ./logs/test.log` and STOP.
-4. **Performance Targets** (only if declared in the phase file):
+4. **Performance Targets** (only if declared in the phase file or `.opencode/perf.yaml` exists):
    - Use minimal output and bail early when possible. Ensure `./logs/` exists; write details to `./logs/perf.log`.
    - Compare results to thresholds from `.opencode/perf.yaml` when present; otherwise enforce from the phase’s “Performance Targets”.
    - If a dedicated perf check exists (e.g., `perf:check` or equivalent) → run it and redirect to `./logs/perf.log`. Must exit 0.
@@ -74,7 +74,16 @@ Archive (only after all validations pass)
 
 Output rules
 
-- Write files and stop. No conversational summaries.
+- Progress echoes (stdout):
+  - RESOLVE_PHASE_START / RESOLVE_PHASE_DONE (<path>)
+  - VALIDATE_START / VALIDATE_DONE
+  - TESTS_START / TESTS_DONE (status)
+  - PERF_START / PERF_SKIPPED / PERF_DONE (status)
+  - ARCHIVE_START / ARCHIVE_DONE (planning/phases/phase_<n>.md → planning/archive/phase_<n>.md)
+  - ROADMAP_UPDATE_START / ROADMAP_UPDATE_DONE
+  - GIT_COMMIT_START / GIT_COMMIT_DONE
+  - COMPLETE_PHASE_DONE (<n>)
+- After `GIT_COMMIT_DONE`, print exactly one line `COMPLETE_PHASE_DONE (<n>)` and EXIT without reading any files. Do not read or echo file contents post-commit.
 - If any validation fails, write a brief FAILURE report to stdout (one line per failing check) and do not archive.
 
 Bash safety

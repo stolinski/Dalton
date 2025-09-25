@@ -48,6 +48,6 @@
 
 - All high-priority tasks complete
 - Critical workflows implemented
-- Performance targets met
+- Performance targets met (if declared)
 - Tests written and passing
 - Retrospective written

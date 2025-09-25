@@ -40,7 +40,7 @@ Stack resolution (in order)
    - server: presence of `src/server/**`, deps "fastify", "express", "hono", or runtime files; "bun" in scripts → bun
    - data: files `drizzle/**` or dep "drizzle-\*" → drizzle; "prisma" → prisma; "knex" → knex
    - tests: deps "vitest"/"jest"/"playwright" or config files
-3. Use only the tools relevant to the detected stack; ignore others.
+3. Use only the tools relevant to the detected stack; ignore others. If Svelte is detected, prefer delegating Svelte UI work to @svelte_pro (proactive Svelte MCP usage).
 
 Conventions (generic)
 
@@ -71,7 +71,8 @@ Outputs
 Delegation:
 
 - If a task becomes complex in a single surface, pass to a subagent:
-  - @web_impl for component-level UI architecture or framework-specific optimizations
+  - @svelte_pro for Svelte/SvelteKit surface work (always uses Svelte MCP and user guidelines)
+  - @web_impl for non-Svelte component-level UI architecture or framework-specific optimizations
   - @server_impl for multi-endpoint HTTP work, background workers, or integration with external APIs
   - @data_impl for schema migrations, seed logic, or query tuning
   - @test_impl for heavy test scaffolding or hard-to-test logic
