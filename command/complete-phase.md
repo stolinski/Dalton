@@ -3,14 +3,14 @@ description: Validate DoD + tests (+ perf if defined) and archive the finished p
 agent: phase_completer
 ---
 
-Complete and archive: $ARGUMENTS # accepts forms: '7', 'phase_07.md', or 'planning/phases/phase_07.md'
+Complete and archive: $ARGUMENTS # accepts forms: '7', 'phase_7.md', or 'planning/phases/phase_7.md'
 
 Git usage: staging and committing only for archiving; no refs/diffs/history are read or required.
 
 Steps:
 
 - Resolve phase file to complete:
-  - If $ARGUMENTS is a bare number N, resolve to planning/phases/phase_0N.md; if missing, fallback to planning/phases/phase_N.md.
+  - If $ARGUMENTS is a bare number N, resolve to planning/phases/phase_N.md; if missing, fallback to planning/phases/phase_0N.md.
   - If empty, read ./planning/roadmap.md and use the Active Phase link; if none, SPEC_GAP asking for a phase number.
 
 - Validate: no Active Tasks pending/in_progress; all DoD boxes checked.

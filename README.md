@@ -40,8 +40,8 @@ Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and
 
 6. Review and complete
 
-- Review: `/review-phase` (auto-detect active/next via roadmap), `/review-phase 7` (bare number), or `/review-phase planning/phases/phase_07.md`
-- Complete: `/complete-phase` (uses Active link), or `/complete-phase 7` (bare number), or `/complete-phase phase_<n>.md`
+- Review: `/review-phase` (auto-detect active/next via roadmap), `/review-phase 7` (bare number), or `/review-phase planning/phases/phase_7.md`
+- Complete: `/complete-phase` (uses Active link), or `/complete-phase 7` (bare number), or `/complete-phase phase_<n>.md` (non-padded preferred; zero-padded also supported)
 
 7. Releases and CI (optional)
 
@@ -138,7 +138,7 @@ Note* if you are manually adding phases, run `/refresh-roadmap` to normalize and
 ## Troubleshooting Review Phase
 
 - Checks-first behavior: `review-phase` always runs typecheck, lint, and tests via project scripts when available. Provide code context (explicit files/contents) for review; no git involved.
-- Autodetect phase: If no argument is given, it reads `planning/roadmap.md` and follows the Active/Next link (e.g., `planning/phases/phase_07.md`).
+- Autodetect phase: If no argument is given, it reads `planning/roadmap.md` and follows the Active/Next link (e.g., `planning/phases/phase_7.md`).
 - Common SPEC_GAPs:
 
   - Active/Next not found: "SPEC_GAP: Active/Next phase not found in planning/roadmap.md. Provide a phase number (e.g., `/review-phase 7`) or a file path."

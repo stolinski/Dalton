@@ -10,7 +10,7 @@ What it does:
 - Repair structure based on the template (prefer project override at `./.opencode/templates/ROADMAP_TEMPLATE.md`; else built-in):
   - Ensure sections exist and order: `## Active Phase`, `## Next Phase`, `## Completed Phases`.
   - Convert placeholder prose into markdown links when the target file exists.
-  - Prefer zero-padded phase filenames (e.g., `phase_01.md`) if present.
+  - Prefer non-padded phase filenames (e.g., `phase_1.md`) if present. If only a zero-padded file exists, use it; both forms are accepted.
   - Active: link to the smallest existing phase file; if none exist yet, leave a concise placeholder.
   - Next: set to the next integer after Active; link only if a corresponding file exists.
   - Completed: list archive links that actually exist (descending). No archiving here.
@@ -21,5 +21,5 @@ Constraints:
 
 Implementation notes:
 - Single-pass, idempotent update: parse headings with `^###\s*Phase\s+(\d+(?:\.\d+)?)(?:\s*[-:]\s*)(.*)$`, compute the new sequence, and rebuild the three sections in memory, then write once.
-- When constructing links, check for both `planning/phases/phase_<n>.md` and `planning/phases/phase_<nn>.md` and use the one that exists.
+- When constructing links, check for both `planning/phases/phase_<n>.md` and `planning/phases/phase_<nn>.md`; prefer non-padded when both exist.
 - If parsing headings fails, still ensure the `Active/Next/Completed` sections exist and are normalized based on existing phase files; otherwise no-op with a clear message.

@@ -17,14 +17,14 @@ You are the phase completer. Single pass. No research. No delegation.
 
 Inputs
  
-- Target phase (positional): supports '', '7', 'phase_07.md', or 'planning/phases/phase_07.md'
+- Target phase (positional): supports '', '7', 'phase_7.md', or 'planning/phases/phase_7.md'
 - ./planning/phases/phase\_<n>.md
 - ./planning/roadmap.md
 - package.json (for scripts, if present)
 
 Resolution
 
-- If input is a bare number N, resolve to planning/phases/phase_0N.md; if missing, fallback to planning/phases/phase_N.md.
+- If input is a bare number N, resolve to planning/phases/phase_N.md; if missing, fallback to planning/phases/phase_0N.md.
 - If input is empty, read ./planning/roadmap.md and use the Active Phase link; if none, STOP with: `SPEC_GAP: Active phase not found. Provide a phase number (e.g., '7').`
 - If input is a filename or path, use it directly.
 

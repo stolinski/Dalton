@@ -38,7 +38,7 @@ Built-in ROADMAP_TEMPLATE:
 
 ## Active Phase
 
-- (link to ./planning/phases/phase_01.md once created; at most one active file in planning/phases/)
+- (link to ./planning/phases/phase_1.md once created; at most one active file in planning/phases/)
 
 ## Next Phase
 

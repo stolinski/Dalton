@@ -4,11 +4,11 @@ agent: quality_reviewer
 ---
 
 Inputs:
-- $ARGUMENTS: one of '', '7', 'phase_07.md', or 'planning/phases/phase_07.md'
+- $ARGUMENTS: one of '', '7', 'phase_7.md', or 'planning/phases/phase_7.md'
 - Flag: --quick (skip checks; perform static code_context review only)
 
 Payload example (orchestrator → quality_reviewer):
-- phase_path: planning/phases/phase_07.md
+- phase_path: planning/phases/phase_7.md
 - phase_content: "...full markdown content..."
 - code_context: [
     { path: "src/lib/foo.ts", content: "..." },
@@ -23,13 +23,13 @@ Payload example (orchestrator → quality_reviewer):
 
 Arguments (positional; Phase by default):
 - "": auto-detect the Active/Next phase from ./planning/roadmap.md
-- "7": treat as Phase number → planning/phases/phase_07.md (fallback to phase_7.md if zero-padded file not found)
-- "phase_07.md" or "planning/phases/phase_07.md": treat as explicit phase file
+- "7": treat as Phase number → planning/phases/phase_7.md (fallback to phase_07.md if only zero-padded file exists)
+- "phase_7.md" or "planning/phases/phase_7.md": treat as explicit phase file
 
 Resolution:
 - If $ARGUMENTS is provided, resolve Phase/Path accordingly (no "Phase:" prefix required).
 - Else, read ./planning/roadmap.md and resolve the Active/Next phase via its link to ./planning/phases/phase_<n>.md.
-- Filename fallback: for numeric input N, prefer `planning/phases/phase_0N.md`; if missing, try `planning/phases/phase_N.md`.
+- Filename fallback: for numeric input N, prefer `planning/phases/phase_N.md`; if missing, try `planning/phases/phase_0N.md`.
 - Echo: RESOLVE_PHASE_START / RESOLVE_PHASE_DONE (<path>)
 
 Code context:
@@ -45,7 +45,7 @@ Checks (orchestrator; no git involved):
 - Echo: CHECKS_START / CHECKS_DONE (typecheck/lint/tests status)
 
 Agent input payload (must provide to quality_reviewer):
-- phase_path: resolved path to the phase file (e.g., `planning/phases/phase_07.md`).
+- phase_path: resolved path to the phase file (e.g., `planning/phases/phase_7.md`).
 - phase_content: full content of the resolved phase file (inline string; do NOT make the agent read it).
 - code_context: array of { path, content } for files under review (no git diff; explicit content only).
 - checks: object with { typecheck: {status, summary}, lint: {status, summary}, tests: {status, summary} }.
