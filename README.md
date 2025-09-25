@@ -6,30 +6,30 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 1. Initialize metadata
 
-- `/init-project-meta`
+- `/init-project`
 
 2. Shape strategy
 
-- Research-enabled: `/roadmap-synthesize "Goals: <bulleted goals>"` (creates/updates “### Phase <n> — <title>” sections in roadmap.md; no phase files)
-- Manual update: `/roadmap-phase-refresh` (maintains/renumbers Phase sections; no file creation)
+- Research-enabled: `/synthesize-roadmap "Goals: <bulleted goals>"` (creates/updates “### Phase <n> — <title>” sections in roadmap.md; no phase files)
+- Manual update: `/renumber-roadmap` (maintains/renumbers Phase sections; no file creation)
 
 3. Plan the phase
 
-- `/phase-plan` to create `planning/phases/phase_<n>.md` with tasks and targets
-  - Accepts bare numbers: `/phase-plan 7` is equivalent to `Phase: 7`
+- `/plan-phase` to create `planning/phases/phase_<n>.md` with tasks and targets
+  - Accepts bare numbers: `/plan-phase 7` is equivalent to `Phase: 7`
   - Defaults to the next phase number derived from the roadmap Phase sections when not provided
   - Optional: include Inline Guidance in the command input to prefill sections (Scope, Key Decisions, Constraints, Risks, Interfaces hints, Performance Targets).
 
 4. Implement tasks
 
-- By ID: `/implement-task p<n>-<id> [--only web|server|data] [--dry-run]`
-- Next task: `/implement-next-task [--only web|server|data] [--dry-run]`
+- By ID: `/do-task p<n>-<id> [--only web|server|data] [--dry-run]`
+- Next task: `/do-next-task [--only web|server|data] [--dry-run]`
 
 5. Tests and performance (optional)
 
-- Tests: `/test-task "<scope or module>"`
-- Perf scaffolding: `/perf-scaffold "<api|ui|db|module>"`
-- Perf run: `/perf-check "<api|ui|db>"`
+- Tests: `/write-tests "<scope or module>"`
+- Perf scaffolding: `/scaffold-perf "<api|ui|db|module>"`
+- Perf run: `/check-perf "<api|ui|db>"`
 
 6. Review and complete
 
@@ -38,43 +38,43 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 7. Releases and CI (optional)
 
-- Changeset one-time setup: `/changesets-scaffold`
-- Create a changeset entry: `/changeset-create [--from main] [--packages ...] [--bump ...] [--summary ...] [--dry-run]`
-- One-time CI setup: `/ci-scaffold`
-- Keep CI current: `/ci-ensure [--enable push,pr] [--node "18,20"] [--workspaces] [--lint/--no-lint] [--perf/--no-perf] [--dry-run]`
+- Changeset one-time setup: `/scaffold-changesets`
+- Create a changeset entry: `/create-changeset [--from main] [--packages ...] [--bump ...] [--summary ...] [--dry-run]`
+- One-time CI setup: `/scaffold-ci`
+- Keep CI current: `/refresh-ci [--enable push,pr] [--node "18,20"] [--workspaces] [--lint/--no-lint] [--perf/--no-perf] [--dry-run]`
 
 ## How To Run: Commands vs Agents
 
-- Prefer commands: Use the slash commands (e.g., `/implement-task`) to orchestrate the right agents and tools automatically. Commands are idempotent where possible and respect safety checks.
+- Prefer commands: Use the slash commands (e.g., `/do-task`) to orchestrate the right agents and tools automatically. Commands are idempotent where possible and respect safety checks.
 - Direct agents (optional): Advanced users may invoke specific agents for focused work, but the commands already route to the appropriate agent for you in most cases.
 - Scoping: Use `--only web|server|data` to constrain implementers to a single surface when needed.
 - Dry-run validation:
-  - Implementation: `/implement-task ... --dry-run`, `/implement-next-task --dry-run` to preview actions without writing.
-  - Releases: `/changeset-create --dry-run` prints the changeset that would be created.
-  - CI: `/ci-ensure --dry-run` shows the proposed workflow updates/diffs without writing.
-  - Performance: Start with `/perf-scaffold` (no execution). `/perf-check` runs and writes reports; it may fail on threshold breaches.
+  - Implementation: `/do-task ... --dry-run`, `/do-next-task --dry-run` to preview actions without writing.
+  - Releases: `/create-changeset --dry-run` prints the changeset that would be created.
+  - CI: `/refresh-ci --dry-run` shows the proposed workflow updates/diffs without writing.
+  - Performance: Start with `/scaffold-perf` (no execution). `/check-perf` runs and writes reports; it may fail on threshold breaches.
 
 ## Commands Overview
 
-- `roadmap-synthesize`: Scans repo, may use Context7, writes/updates `planning/roadmap.md` with proposed Phase sections (“### Phase <n> — <title>”), determined by your Goals/args and existing roadmap. It preserves existing phase sections and appends contiguously. No phase files.
-- `roadmap-phase-refresh`: Maintains/renumbers Phase sections (normalizes decimals; preserves links). No research here; does not create or archive phase files.
-- `phase-plan`: Creates `planning/phases/phase_<n>.md` with ≤15 tasks (IDs `p<n>-<seq>`, Priority, Status, Acceptance), Risks, Interfaces, Performance Targets, DoD. Accepts bare numbers (e.g., `7`).
+- `synthesize-roadmap`: Scans repo, may use Context7, writes/updates `planning/roadmap.md` with proposed Phase sections (“### Phase <n> — <title>”), determined by your Goals/args and existing roadmap. It preserves existing phase sections and appends contiguously. No phase files.
+- `renumber-roadmap`: Maintains/renumbers Phase sections (normalizes decimals; preserves links). No research here; does not create or archive phase files.
+- `plan-phase`: Creates `planning/phases/phase_<n>.md` with ≤15 tasks (IDs `p<n>-<seq>`, Priority, Status, Acceptance), Risks, Interfaces, Performance Targets, DoD. Accepts bare numbers (e.g., `7`).
 
-- `implement-task`: ID-only; parses the task title/notes from the phase file; supports flags `--only` and `--dry-run`.
-- `implement-next-task`: Auto-selects next task; supports flags `--only` and `--dry-run`.
-- `implement-task-web|server|data`: Force a specific surface when desired.
-- `test-task`: Writes/updates tests; auto-detects runner (Vitest/Jest/Playwright).
-- `perf-scaffold`: Generates minimal, commented benches; no execution or thresholds unless asked.
-- `perf-check`: Runs perf, compares to `.opencode/perf.yaml` or phase targets; writes `perf_reports/<timestamp>.md`; fails on threshold violations.
+- `do-task`: ID-only; parses the task title/notes from the phase file; supports flags `--only` and `--dry-run`.
+- `do-next-task`: Auto-selects next task; supports flags `--only` and `--dry-run`.
+- `do-web-task|do-server-task|do-data-task`: Force a specific surface when desired.
+- `write-tests`: Writes/updates tests; auto-detects runner (Vitest/Jest/Playwright).
+- `scaffold-perf`: Generates minimal, commented benches; no execution or thresholds unless asked.
+- `check-perf`: Runs perf, compares to `.opencode/perf.yaml` or phase targets; writes `perf_reports/<timestamp>.md`; fails on threshold violations.
 - `review-phase`: Phase-scoped quality pass that runs typecheck/lint/tests (checks-first) and reviews provided code context (explicit files/contents). Accepts bare numbers or auto-detects Active/Next via roadmap. No git usage.
 - `complete-phase`: Validates DoD, tests, and perf if defined; archives the phase and updates roadmap. Accepts bare numbers or uses the Active link if not provided. Removes the completed Phase section from the roadmap, adds a link under Completed Phases, and updates Active/Next. Commits only changes to `planning/roadmap.md` and `planning/archive/phase_<n>.md`; does not stage unrelated files.
 
 ## Releases & CI (Optional)
 
-- `changesets-scaffold`: One-time setup for `.changeset/` config and npm scripts.
-- `changeset-create`: Generates a new changeset entry file (single or multi-package), with inference and dry-run.
-- `ci-scaffold`: One-time creation of `.github/workflows/ci.yml` (manual trigger by default).
-- `ci-ensure`: Idempotent create/update of CI using managed blocks; preserves custom edits; supports dry-run.
+- `scaffold-changesets`: One-time setup for `.changeset/` config and npm scripts.
+- `create-changeset`: Generates a new changeset entry file (single or multi-package), with inference and dry-run.
+- `scaffold-ci`: One-time creation of `.github/workflows/ci.yml` (manual trigger by default).
+- `refresh-ci`: Idempotent create/update of CI using managed blocks; preserves custom edits; supports dry-run.
 
 ## Agents & Permissions
 
@@ -93,31 +93,31 @@ This repository config defines a lean Plan → Implement → Verify → Complete
 
 - Project-wide decisions: Use `templates/ENGINEERING_DECISIONS_TEMPLATE.md` as the canonical format. Create `planning/engineering-decisions.md` per-project only when you need a persistent record. Avoid duplicating decisions in multiple places.
 - Machine-readable defaults (optional): `.opencode/project.yaml` can declare stacks and conventions (e.g., `web/server/data/tests`). Use it if you want automation.
-- Inline Guidance: You can pass guidance to `/phase-plan` to seed the new phase with specific scope, decisions, and targets.
+- Inline Guidance: You can pass guidance to `/plan-phase` to seed the new phase with specific scope, decisions, and targets.
 
 ## Embedded Templates & Numbering
 
 - Built-in templates: Agents embed `PHASE_TEMPLATE`, `ROADMAP_TEMPLATE`, and `ENGINEERING_DECISIONS_TEMPLATE` so they work without repo-scoped template files.
 - Optional overrides: If present, commands prefer `./.opencode/templates/*.md` project overrides.
-- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/roadmap-phase-refresh` normalizes to sequential integers and updates internal links. `/phase-plan` never creates fractional phase files.
-- Collision handling: If `planning/phases/phase_<n>.md` exists, `/phase-plan` aborts without writing. Pass `Phase: <n>` to choose a different number or archive/rename the existing file first.
+- Phase numbers: Always integers. If the roadmap uses decimals in headings (e.g., “Phase 7.5 — …”), `/renumber-roadmap` normalizes to sequential integers and updates internal links. `/plan-phase` never creates fractional phase files.
+- Collision handling: If `planning/phases/phase_<n>.md` exists, `/plan-phase` aborts without writing. Pass `Phase: <n>` to choose a different number or archive/rename the existing file first.
 
 ## Manual Normalization
 
-- Use `/roadmap-phase-refresh` to update the roadmap and normalize phase headings.
+- Use `/renumber-roadmap` to update the roadmap and normalize phase headings.
 - If headings contain decimals (e.g., `### Phase 7.5 — …`), the command renumbers to sequential integers and updates internal links.
 - The command edits only `planning/roadmap.md`. It does not create or modify phase files.
 - Recommended: keep phase numbers as integers; decimals are supported for input but are normalized away.
 
 ## Task Shaping & Adjustments
 
-- Shape concrete tasks in the phase file created by `/phase-plan`. Add/edit rows as needed; keep ≤15 active tasks.
-- Adjust strategy via `/roadmap-phase-refresh` to update Phase sections and the next-phase link. Then run `/phase-plan` to create the next concrete phase.
+- Shape concrete tasks in the phase file created by `/plan-phase`. Add/edit rows as needed; keep ≤15 active tasks.
+- Adjust strategy via `/renumber-roadmap` to update Phase sections and the next-phase link. Then run `/plan-phase` to create the next concrete phase.
 
 ## Performance Targets & Benchmarks
 
 - Prefer `.opencode/perf.yaml` for thresholds; else use the phase’s “Performance Targets.”
-- Keep benchmarks opt-in with `/perf-scaffold`.
+- Keep benchmarks opt-in with `/scaffold-perf`.
 
 ## Perf Tests Convention
 

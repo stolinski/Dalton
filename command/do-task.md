@@ -23,5 +23,5 @@ Rules:
 
 - ESM, Node ≥ 20 when Node is present, native fetch, snake_case.
 - Verify unknown APIs with minimal runnable snippets before coding.
-- Write/update tests alongside code when appropriate (or use /test-task for dedicated test authoring).
+- Write/update tests alongside code when appropriate (or use /write-tests for dedicated test authoring).
 - On completion, move the task row to “Completed ✓” with date.

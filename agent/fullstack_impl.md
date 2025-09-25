@@ -24,8 +24,8 @@ Role
 
 Task selection override
 
-- If `implement-next-task` passes a positional argument that is not an exact task ID (regex `^p\d+-\d+$`), ignore it.
-- If an exact task ID is provided, prioritize that task; otherwise, select based on `implement-next-task` rules.
+- If `do-next-task` passes a positional argument that is not an exact task ID (regex `^p\d+-\d+$`), ignore it.
+- If an exact task ID is provided, prioritize that task; otherwise, select based on `do-next-task` rules.
 
 Stack resolution (in order)
 
