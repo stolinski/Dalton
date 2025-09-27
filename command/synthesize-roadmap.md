@@ -1,25 +1,44 @@
 ---
-description: Synthesize or refresh roadmap from high-level goals
-agent: roadmap_synthesizer
+description: Initialize/update roadmap with guidance; draft/apply (dalton-2)
 ---
 
-Goals:
-$ARGUMENTS
+# Purpose
 
-Phases behavior:
-- Create or update “### Phase <n> — <title>” sections within roadmap.md.
-- Determine how many to add based on Goals/args and existing roadmap context; no fixed default count.
-- Source titles from Goals/args; if missing, use existing phase headings.
-- Start numbering at the current Next Phase number; preserve existing phase sections and append new ones contiguously.
+Create or update `planning/roadmap.md` using optional guidance. Supports dry preview (draft) and apply.
 
-Scan repo context and produce ./planning/roadmap.md with:
-- Assumptions & Unknowns
-- “### Phase <n> — <title>” sections (proposed phases), numbered contiguously:
-  - Determine count based on provided Goals/args and existing roadmap context (no fixed default count).
-  - Source titles primarily from the Goals/args; if missing, use existing phase headings to preserve intent.
-  - If existing phase sections are present, preserve them; append new ones starting at the current Next Phase number.
-  - Keep content lightweight (1–3 bullets max per phase) derived from Goals and repo context; avoid task-level detail.
-- Active/Next/Completed sections remain as pointers (do not create or modify phase files).
+# Flags
 
-No secondary goals file. Do not create phase files.
+- `--guidance "<text>"`
+- `--guidance-file <path>`
+- `--language <locale>`
+- `--tone <style>`
+- `--review-only` | `--apply`
 
+# Behavior
+
+- Read existing `planning/roadmap.md` if present; otherwise create on `--apply`.
+- Generate concise sections and numbered `### Phase <n> — <title>` headings.
+- Keep Active/Next/Completed as link sections only (do not create phase files).
+- Draft vs apply:
+  - Review only: write preview to `planning/.drafts/roadmap_preview.md` → emit `DRAFT_READY path=planning/.drafts/roadmap_preview.md`
+  - Apply: write `planning/roadmap.md` → emit `APPLIED planning/roadmap.md`
+
+# Markers
+
+- Always print: `ARGV {"raw":"$ARGUMENTS"}`
+- Draft: `DRAFT_READY path=planning/.drafts/roadmap_preview.md`
+- Apply: `APPLIED planning/roadmap.md`
+- End: `DONE synthesize-roadmap`
+
+# IO Rules
+
+- Read/write only `planning/roadmap.md` and `planning/.drafts/`.
+- No phase files created here.
+
+# Examples
+
+```
+ARGV {"raw":"--guidance ... --review-only"}
+DRAFT_READY path=planning/.drafts/roadmap_preview.md
+DONE synthesize-roadmap
+```

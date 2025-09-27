@@ -8,6 +8,9 @@ tools:
   write: true
   edit: true
   bash: true
+  context7: false
+  svelte5: false
+  sentry: false
 permission:
   edit: ask
   bash: allow
@@ -64,7 +67,7 @@ Archive (only after all validations pass)
    - Remove the entire section headed `### Phase <n>` (from the heading line through the content up to but not including the next `###` or end-of-file).
    - Under "## Completed Phases", add a bullet link to `./planning/archive/phase_<n>.md` (format: `- [Phase <n> — <Title>](./planning/archive/phase_<n>.md)`; if title unknown, omit the em dash and title).
    - Active Phase: if it pointed to `phase_<n>.md`, clear it or point to the next active phase if one exists.
-   - Next Phase: set to the smallest integer greater than <n> that is not already present as a phase file; if that file already exists, link it, otherwise show the number.
+   - Next Phase: if any phase files with numbers greater than <n> exist, set to the smallest-numbered such file; otherwise set to the smallest integer greater than <n> that is not present as a file and show the number (or link if that file exists).
 4. Git commit:
    - Stage ONLY the relevant paths: `planning/roadmap.md` and `planning/archive/phase_<n>.md` (the deletion of `planning/phases/phase_<n>.md` is already tracked by `git mv`).
    - Do NOT stage logs or unrelated files. Avoid `git add -A`.

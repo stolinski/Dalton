@@ -1,25 +1,82 @@
 ---
-description: Implement the next prioritized task from the current phase
-agent: fullstack_impl
+description: "Orchestrator: select → prepare → implement → test → complete (dalton-2)"
 ---
 
-Flags (optional):
-- --only <surface>   # one of: web | server | data
-- --dry-run          # select and print the chosen task without changing files
+# Command Contract (NO CODEGEN)
 
-Arguments:
-- This command takes no positional arguments. Ignore any stray tokens (e.g., "." or trailing punctuation) in $ARGUMENTS.
-- Optional override: If a single token in $ARGUMENTS EXACTLY matches a task ID regex `^p\d+-\d+$` (e.g., `p7-3`), implement that task instead of auto-selecting.
+- This command is **non-editing**. It MUST NOT create/modify/delete project files.
+- It MAY ONLY:
+  - Parse ARGV (non-interactive).
+  - Invoke agents in the flow below.
+  - Print markers and the final summary.
+- If any write/codegen is about to happen (e.g., creating `scripts/**`, `src/**`, `server/**`, `db/**`, `migrations/**`, `schema/**`, `tools/**`), print:
+  `IO_VIOLATION COMMAND_WRITE <path>` and **STOP**.
 
-Select the next task from ./planning/phases/phase_<n>.md using this order:
+Forbidden in commands:
 
-1) Status: in_progress > pending (ignore blocked)
-2) Priority: High > Medium > Low > unset
-3) Sequence: lower p<n>-<seq> first
+- Generating code files (`*.ts`, `*.js`, `*.svelte`, etc.)
+- Creating CLIs (e.g., `scripts/do-next-task.ts`)
+- Running scaffolds; edits belong only in agents.
 
-Behavior:
-- If --dry-run is set, output the chosen task ID and title and stop.
-- If --only is set, restrict implementation to that surface and add a short note in the phase file under the task’s Notes on what remains for other surfaces (if any).
-- Testing during implementation must be targeted only (related files/tags) and use minimal output redirected to `./logs/test-impl.log`. Do not run full suites unless explicitly requested by the user or acceptance criteria.
+# ARGV (non‑interactive gate)
 
-Implement the task end-to-end (or surface-limited). Parse the task's title and acceptance criteria from the phase file. On completion, move the task row to “Completed ✓” with date. If no eligible task exists, emit SPEC_GAP naming why.
+- Input: use raw `$ARGUMENTS`. Do **not** prompt.
+- Recognized tokens (order‑agnostic):
+  - `--only <web|server|data>`
+  - `--dry-run`
+  - `<task_id>` matching `^p\d+-\d+$`
+- JSON mode: if `$ARGUMENTS` begins with `{`, parse JSON and merge onto defaults; ignore unknown keys.
+- Defaults: `task_id="auto"`, `only="none"`, `dry_run=false`.
+
+First printed line (required):
+ARGV {"task_id":"<id|auto>","only":"<web|server|data|none>","dry_run":<true|false>,"raw":"$ARGUMENTS"}
+
+(Optional debug):
+DEBUG:ARGS raw="$ARGUMENTS"
+DEBUG:FLAGS only=<web|server|data|none> dry_run=<true|false> task_id=<id|auto>
+
+# IO Discipline
+
+- Strict allowlists per **agent**; the command itself does not read/write files.
+- Never scan repo root; only agents may do controlled expansions.
+
+# Flow (exact order; command ONLY orchestrates)
+
+1. @roadmap_resolver → require PHASE_ACTIVE <n> <path>
+2. @phase_loader → require PHASE_FILE <n> <path> and TASKS <count>
+3. @task_selector (or validate provided id) → require SELECT p<n>-<seq> "<title>"
+   - If ARGV.task_id provided and status is `completed`: SPEC_GAP task <task_id> already completed
+   - After SELECT, defensively confirm status; if completed: SPEC_GAP selected task already completed: <task_id>
+   - If project-local .opencode/cache/last-completed.json equals selected id: DEBUG:last-completed <task_id>
+4. @context_preparer <task_id> [only] → require FILES <n> and CACHE <fresh|stale|missing> <path>
+5. If dry_run: print summary (PHASE/TASK/CACHE/ONLY) and STOP
+6. @impl_surface <task_id> [only] → require CHANGED <m> (≥1 unless notes-only)
+7. @test_surface <task_id> → require TEST pass log=./logs/test-impl.log
+8. Set VERIFY_OK=true in project-local cache
+9. @complete_task <task_id> → require COMPLETE <task_id> date=<YYYY-MM-DD>
+
+All agents MUST also print: START <agent> flow=do-next-task phase=<n> task=<id> and DONE <agent>.
+
+# Dry‑run
+
+- Stops after @context_preparer. Print summary (PHASE/TASK/CACHE/ONLY) then STOP.
+
+# Audit (optional)
+
+- If `--audit` (out-of-band), append a single line to ./logs/run.log at agent level (not here).
+
+# Summary (print in this exact order)
+
+PHASE: <n> <path>
+TASK: <task_id> <title>
+CACHE: <fresh|stale|missing> <path>
+ONLY: <web|server|data|none> # omit if none
+DONE do-next-task
+
+# Failure handling
+
+- SPEC_GAP <which agent/marker>
+- SPEC_GAP acceptance missing for <task_id>
+- SPEC_GAP task <task_id> already completed
+- SPEC_GAP selected task already completed: <task_id>
+- IO_VIOLATION <path>

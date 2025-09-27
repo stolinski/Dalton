@@ -2,12 +2,15 @@
 description: "Quality reviewer; small safe refactors; no external docs; no repo reads."
 mode: subagent
 model: github-copilot/gpt-5
-temperature: 0.1
+temperature: 0.0
 tools:
-  read: false
+  read: true
   write: false
   edit: false
   bash: false
+  context7: false
+  svelte5: false
+  sentry: false
 permission:
   edit: deny
   bash: deny

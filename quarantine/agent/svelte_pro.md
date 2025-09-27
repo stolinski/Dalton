@@ -1,6 +1,6 @@
 ---
 description: "Svelte Pro implementer: always up-to-date Svelte 5 code via Svelte MCP, respecting user syntax guidelines"
-mode: subagent
+mode: all
 model: github-copilot/gpt-5
 temperature: 0.2
 tools:

@@ -14,7 +14,7 @@
 
 ## Next Phase
 
-- (next integer phase without a file yet; link when created)
+- (if Active is set, link the smallest-numbered existing phase file greater than Active; otherwise set to the smallest missing integer and link when created)
 
 ## Completed Phases
 

@@ -29,18 +29,19 @@ Behavior:
   - If text appears on the same line after `Goals:`, capture it.
   - Additionally capture all subsequent lines until the next blank line or EOF (supports multi-line pastes).
   - If the captured text is empty/whitespace or equals the literal placeholder `$ARGUMENTS`, treat as no explicit goals and infer from the existing roadmap (existing Phase sections and pointers) plus repo context.
-- Write or update planning/roadmap.md with:
+- Write or update planning/roadmap.md (single-pass IO: read once, compute in memory, write once) with:
   - Assumptions & Unknowns
   - Proposed Phase sections using headings “### Phase <n> — <title>”:
-    - Determine how many phases to propose based on the Goals/args and existing roadmap context (no fixed default count).
+    - Determine how many phases to propose based on the Goals/args and existing roadmap context (no fixed default count). Never reduce or delete existing phases; only append new phases after preserving all existing ones.
     - Source titles primarily from the Goals/args; if unavailable, keep current phase headings intact.
-    - Number contiguously starting at the current Next Phase value in the roadmap; if existing phase headings are present, preserve them and append new ones.
-    - Include 1–3 lightweight bullets per phase derived from Goals and repo constraints (no task-level detail).
+    - Number contiguously starting at the current Next Phase value in the roadmap; if existing phase headings are present, preserve them and append new ones. Never renumber or remove previously present headings; only append.
+    - Include 1–3 lightweight bullets per phase derived from Goals and repo constraints (no task-level detail). Preserve existing phase bodies verbatim; do not condense or rewrap user-authored bullets.
   - Active/Next/Completed sections:
     - Preserve existing Active Phase link (do not change files).
-    - Set Next Phase to the smallest integer not present as a file; if a pre-created file exists, link it; otherwise show the number.
+    - Set Next Phase to the smallest-numbered existing phase file with a number greater than the Active phase. If none exists, set it to the smallest integer not present as a file greater than max(Active, highest completed), and only link it if that file exists; otherwise show the number as text.
     - Preserve Completed Phases list; do not remove or renumber items tied to files.
 
 Constraints:
 - Do not modify phase files
 - Keep roadmap strategic and concise; avoid task-level detail
+- Safety guard: Before writing, ensure the number of `### Phase` blocks in the output is >= the input; if not, abort with a clear message and do not write.

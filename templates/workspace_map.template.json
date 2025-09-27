@@ -1,0 +1,5 @@
+{
+  "web_defaults": ["src/routes/**", "src/lib/**"],
+  "server_defaults": ["src/lib/server/**", "server/**"],
+  "data_defaults": ["db/**", "migrations/**", "schema/**"]
+}

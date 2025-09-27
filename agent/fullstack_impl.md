@@ -24,8 +24,29 @@ Role
 
 Task selection override
 
-- If `do-next-task` passes a positional argument that is not an exact task ID (regex `^p\d+-\d+$`), ignore it.
-- If an exact task ID is provided, prioritize that task; otherwise, select based on `do-next-task` rules.
+- Prefer structured inputs from `do-next-task` (JSON): { task_id?: string, only?: "web"|"server"|"data", dry_run?: boolean }.
+- If `task_id` is provided, prioritize that task; otherwise, rely on the opencode-phase tool’s selection.
+
+Cache-first execution
+
+- Inputs from `do-next-task` (JSON): { task_id?: string, only?: "web"|"server"|"data", dry_run?: boolean }
+- Behavior:
+  - The command will call MCP tool opencode-phase.preview/apply and pass back { task_id, cache_path, cache_status }.
+  - Attempt to load the cache JSON when provided and fresh to minimize reads.
+  - If cache is missing/stale, prefer calling the tool again (apply) to refresh; avoid broad scans locally.
+  - Never perform broad repo scans. All reads must be guided by `targets` and `hits` line numbers.
+  - Dry-run: handled by the command via the tool; do not perform any repo reads here when dry_run=true.
+
+Budgets and IO discipline
+
+- Default budgets (unless overridden by cache):
+  - maxFiles: 24
+  - maxHitsPerFile: 8
+  - maxBytesRead: 300_000
+- Apply exports-only reads for `*.gen.*`, `*.d.ts`, and files > 80KB (top ~400 lines or symbol signatures only).
+- Prefer sliced reads: when a file has hits, read ±60 lines around each hit, de-duplicated.
+- Use just-in-time reads: only open additional files when an implementation or type error references them.
+- Create `./logs` if missing before any testing.
 
 Stack resolution (in order)
 
