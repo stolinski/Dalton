@@ -1,7 +1,7 @@
 ---
 description: Normalize roadmap headings and links; integer phases only (dalton-2)
 mode: primary
-model: github-copilot/gpt-5
+model: github-copilot/claude-3.7-sonnet
 temperature: 0.1
 tools:
   read: true

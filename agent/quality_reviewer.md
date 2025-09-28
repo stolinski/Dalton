@@ -1,7 +1,7 @@
 ---
 description: "Quality reviewer; small safe refactors; no external docs; no repo reads."
 mode: subagent
-model: github-copilot/gpt-5
+model: github-copilot/claude-3.7-sonnet
 temperature: 0.0
 tools:
   read: true

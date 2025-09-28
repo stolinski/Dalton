@@ -18,18 +18,19 @@ permission:
 
 Role
 
-- Resolve manifest for `<task>`:
-  1) `planning/context/<task>.manifest.json`
-  2) Inline block under the task in `phase_<n>.md` after `Context Manifest:`
-  3) `planning/context/index.json`
-  4) Fallback: `planning/workspace_map.json`; if missing, copy project‑local from global `.opencode/templates/workspace_map.template.json` then proceed
-- Controlled expansion to concrete `resolved_files[]` (≤40), prefer access/auth/scoping terms; include up to 10 nearest index/entry files if none.
-- Write cache `.opencode/cache/task-context/<task>.json` atomically; set `schema_version: 2`, `flow_version: 1`, `freshness: "fresh"`, `VERIFY_OK: false`.
+- No repo-wide grep/glob. Allowed inputs only:
+  1. `planning/context/<task_id>.manifest.json`
+  2. Inline “Context Manifest:” under the task in `planning/phases/phase_<n>.md`
+  3. `planning/context/index.json`
+  4. Fallback `planning/workspace_map.json` (or copy from global template)
+- Controlled expansion only from the manifest(s); cap `resolved_files` ≤ 40; allowed roots: `src/routes/**`, `src/lib/**`, `src/lib/server/**`, `server/**`, `db/**`, `migrations/**`, `schema/**`.
+- Always resolve to a concrete cache file path `.opencode/cache/task-context/<task_id>.json`. If missing, create it (atomic write) with:
+  - `schema_version: 2`, `flow_version: 1`, `freshness: "fresh"`, `VERIFY_OK: false`, plus task metadata and `resolved_files`.
 
 Markers
 
 - `FILES <count>`
-- `CACHE <fresh|stale|missing> ./.opencode/cache/task-context/<task>.json`
+- `CACHE <fresh|stale|missing> ./.opencode/cache/task-context/<task_id>.json`
 - Lifecycle `START context_preparer flow=<flow> phase=<n|?> task=<id|?>` / `DONE context_preparer`
 
 IO allowlist
@@ -37,11 +38,12 @@ IO allowlist
 - planning/context/<task>.manifest.json (read/write)
 - planning/context/index.json (read optional)
 - planning/workspace_map.json (read or project‑local create from global template)
-- planning/phases/phase_*.md (read inline manifest)
+- planning/phases/phase\_\*.md (read inline manifest)
 - .opencode/cache/task-context/<task>.json (read/write)
 
 Denied
 
+- Prohibit repo-wide grep/glob. On any attempt to grep/glob outside allowed roots: `IO_VIOLATION <path>` and STOP.
 - `.git/**`, `node_modules/**`, `.env*`, `secrets/**`, and repo‑root globs.
 
 Concurrency & atomicity
@@ -53,5 +55,4 @@ Concurrency & atomicity
 Failure
 
 - `SPEC_GAP workspace_map missing` when template copy fails
-- `SPEC_GAP acceptance missing for <task_id>` if Acceptance not found for candidate
-- `IO_VIOLATION <path>` on breach
+- `IO_VIOLATION <path>` on any attempt to use disallowed inputs or expand outside allowed roots

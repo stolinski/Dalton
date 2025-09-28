@@ -1,7 +1,7 @@
 ---
 description: Apply changes only to resolved_files (filtered by ARGV.only) and route (dalton-2)
 mode: primary
-model: github-copilot/gpt-5
+model: github-copilot/gpt-5-codex
 temperature: 0.15
 tools:
   read: true

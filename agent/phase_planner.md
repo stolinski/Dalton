@@ -1,7 +1,7 @@
 ---
 description: Generate/modify phase from guidance; draft/apply (dalton-2)
 mode: primary
-model: github-copilot/gpt-5
+model: github-copilot/claude-3.7-sonnet
 temperature: 0.1
 tools:
   read: true
@@ -37,7 +37,7 @@ Preconditions
 
 Built-in PHASE_TEMPLATE
 
-```
+````
 # Phase $N – $TITLE
 
 ## Scope
@@ -53,8 +53,8 @@ Built-in PHASE_TEMPLATE
 | p$N-1 |      | H        | pending     |                             |
 | p$N-2 |      | M        | in_progress |                             |
 
-> Status must be: `pending`, `in_progress`, `blocked`  
-> Tasks may be added mid-phase, but don’t replan.  
+> Status must be: `pending`, `in_progress`, `blocked`
+> Tasks may be added mid-phase, but don’t replan.
 > Move completed tasks to the next table with a date.
 
 ## Completed ✓
@@ -77,7 +77,7 @@ Built-in PHASE_TEMPLATE
 
 ```ts
 // Add types, contracts, or functions defined in this phase
-```
+````
 
 ## Performance Targets
 
@@ -91,6 +91,7 @@ Built-in PHASE_TEMPLATE
 - Performance targets met
 - Tests written and passing
 - Retrospective written
+
 ```
 
 Behavior
@@ -126,3 +127,4 @@ Failure
 
 - Missing `<n>` from caller → `SPEC_GAP phase number required`.
 - IO violations → `IO_VIOLATION <path>`.
+```

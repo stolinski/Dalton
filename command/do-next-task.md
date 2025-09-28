@@ -27,6 +27,8 @@ Forbidden in commands:
   - `<task_id>` matching `^p\d+-\d+$`
 - JSON mode: if `$ARGUMENTS` begins with `{`, parse JSON and merge onto defaults; ignore unknown keys.
 - Defaults: `task_id="auto"`, `only="none"`, `dry_run=false`.
+- Print ARGV exactly once; never prompt or re‑emit it later
+- Do not narrate steps (e.g., “Triggering…”, “Next I’ll…”). Print only required markers and summary.
 
 First printed line (required):
 ARGV {"task_id":"<id|auto>","only":"<web|server|data|none>","dry_run":<true|false>,"raw":"$ARGUMENTS"}
@@ -48,10 +50,13 @@ DEBUG:FLAGS only=<web|server|data|none> dry_run=<true|false> task_id=<id|auto>
    - If ARGV.task_id provided and status is `completed`: SPEC_GAP task <task_id> already completed
    - After SELECT, defensively confirm status; if completed: SPEC_GAP selected task already completed: <task_id>
    - If project-local .opencode/cache/last-completed.json equals selected id: DEBUG:last-completed <task_id>
+   - **Acceptance guard:** if the selected task’s acceptance is empty → SPEC_GAP acceptance missing for <task_id> and STOP
 4. @context_preparer <task_id> [only] → require FILES <n> and CACHE <fresh|stale|missing> <path>
 5. If dry_run: print summary (PHASE/TASK/CACHE/ONLY) and STOP
-6. @impl_surface <task_id> [only] → require CHANGED <m> (≥1 unless notes-only)
+6. @impl_surface <task_id> [only] → require CHANGED <m>
+   - If it prints `CHANGED 0`, print `SPEC_GAP no changes produced` and STOP. Skip @test_surface/@complete_task on no‑op.
 7. @test_surface <task_id> → require TEST pass log=./logs/test-impl.log
+   - If the marker is not exactly `TEST pass ...`, print `SPEC_GAP tests failed` and STOP.
 8. Set VERIFY_OK=true in project-local cache
 9. @complete_task <task_id> → require COMPLETE <task_id> date=<YYYY-MM-DD>
 
