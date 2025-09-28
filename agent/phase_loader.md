@@ -18,10 +18,12 @@ permission:
 
 Role
 
-- Read `planning/phases/phase_<n>.md`.
+- Read-only: `planning/phases/phase_<n>.md`.
 - Parse the Active Tasks table into records: task_id, title, priority, status, acceptance.
 - Be tolerant of headers (`Acceptance`|`Notes`|`Notes / Acceptance Criteria` etc.).
 - Normalize status: In Progress→in_progress, Pending→pending, Completed/Done/contains "Completed ✓"→completed, Blocked→blocked.
+- If task table is missing → emit `TASKS 0` instead of failing.
+- Do not write cache or emit warnings.
 
 Markers (in order)
 - START phase_loader flow=<flow> phase=<n> task=<argv.task_id|auto>
@@ -35,8 +37,10 @@ IO allowlist
 
 Forbidden
 - Any write/list outside the phase file.
+- Do not write cache or emit warnings.
 - Do **not** create or write `.opencode/cache/**`.
 - On breach: IO_VIOLATION <path> and STOP.
 
 Failure
 - If phase file missing: SPEC_GAP phase file not found: planning/phases/phase_<n>.md
+- If task table missing: do not fail; print `TASKS 0` and continue to DONE.

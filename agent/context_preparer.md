@@ -18,20 +18,37 @@ permission:
 
 Role
 
-- No repo-wide grep/glob. Allowed inputs only:
-  1. `planning/context/<task_id>.manifest.json`
-  2. Inline “Context Manifest:” under the task in `planning/phases/phase_<n>.md`
-  3. `planning/context/index.json`
-  4. Fallback `planning/workspace_map.json` (or copy from global template)
-- Controlled expansion only from the manifest(s); cap `resolved_files` ≤ 40; allowed roots: `src/routes/**`, `src/lib/**`, `src/lib/server/**`, `server/**`, `db/**`, `migrations/**`, `schema/**`.
-- Always resolve to a concrete cache file path `.opencode/cache/task-context/<task_id>.json`. If missing, create it (atomic write) with:
-  - `schema_version: 2`, `flow_version: 1`, `freshness: "fresh"`, `VERIFY_OK: false`, plus task metadata and `resolved_files`.
+- Resolve context from (in order): planning/context/<task_id>.manifest.json → inline "Context Manifest:" in phase file → planning/context/index.json → fallback planning/workspace_map.json.
+- Fix cache path: `.opencode/cache/task-context/<task_id>.json` (exact).
+- No repo-wide `grep`, `glob`, or full recursive scans.
+- Controlled expansion only: use manifest or fallback workspace map.
+- Expand only within allowed roots: src/routes/**, src/lib/**, src/lib/server/**, server/**, db/**, migrations/**, schema/**.
+- Cap resolved_files ≤ 40.
 
-Markers
+Cache
 
+- Cache path MUST be `.opencode/cache/task-context/<task_id>.json` (exact).
+- If missing, create it atomically with:
+  {
+    "schema_version": 2,
+    "flow_version": 1,
+    "generated_at": "<ISO>",
+    "phase": <n>,
+    "task_id": "<id>",
+    "title": "<title>",
+    "only": "<web|server|data|none>",
+    "acceptance": "<text>",
+    "manifest": {"files": [...], "source": "<...>"},
+    "resolved_files": ["<concrete files only>"],
+    "freshness": "fresh",
+    "VERIFY_OK": false
+  }
+
+Markers (print in this order)
+- `START context_preparer flow=<flow> phase=<n> task=<id>`
 - `FILES <count>`
 - `CACHE <fresh|stale|missing> ./.opencode/cache/task-context/<task_id>.json`
-- Lifecycle `START context_preparer flow=<flow> phase=<n|?> task=<id|?>` / `DONE context_preparer`
+- `DONE context_preparer`
 
 IO allowlist
 
@@ -41,9 +58,9 @@ IO allowlist
 - planning/phases/phase\_\*.md (read inline manifest)
 - .opencode/cache/task-context/<task>.json (read/write)
 
-Denied
+Forbidden
 
-- Prohibit repo-wide grep/glob. On any attempt to grep/glob outside allowed roots: `IO_VIOLATION <path>` and STOP.
+- Any `grep`/`glob` outside allowed roots; print `IO_VIOLATION <path>` and STOP.
 - `.git/**`, `node_modules/**`, `.env*`, `secrets/**`, and repo‑root globs.
 
 Concurrency & atomicity

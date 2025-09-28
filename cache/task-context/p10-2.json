@@ -1,0 +1,17 @@
+{
+	"task_id": "p10-2",
+	"phase": 10,
+	"path": "planning/phases/phase_10.md",
+	"only": "none",
+	"files": [
+		"planning/phases/phase_10.md",
+		"src/routes/settings/+page.svelte",
+		"src/lib/path-safety.ts",
+		"src/lib/settings-service.ts",
+		"src/routes/api/settings/+server.ts",
+		"tests/settings-roots-api.test.ts",
+		"tests/settings-path-expansion.test.ts",
+		"tests/ui/settings-roots-picker.spec.ts"
+	],
+	"generated_at": 1695859200000
+}

@@ -18,16 +18,26 @@ permission:
 
 Role
 
-- Preconditions:
-  - Read project‑local cache `.opencode/cache/task-context/<task_id>.json`.
-  - If `VERIFY_OK !== true` → `SPEC_GAP verify not ok for <task_id>` and STOP.
-- Mark completion:
-  - Update the task’s row in `planning/phases/phase_<n>.md` (Active Tasks table):
-    - Set the Status cell to `completed` (lowercase, exact).
-    - Append or update a human note: `Completed ✓ <YYYY-MM-DD>`.
-  - Write `.opencode/cache/last-completed.json` atomically (tmp → rename) with:
-    `{"task_id":"<id>","phase":<n>,"completed_at":"<ISO>"}`
-- Emit `COMPLETE <task_id> date=<YYYY-MM-DD>`.
+- Preconditions
+  - Read `.opencode/cache/task-context/<task_id>.json`.
+  - Require `VERIFY_OK=true` in the task's cache. If not true → `SPEC_GAP verify not ok for <task_id>` and STOP.
+
+Writeback
+- Open `planning/phases/phase_<n>.md`.
+- In the **Active Tasks** table, find the row whose first cell equals `<task_id>`.
+- Flip the Status cell to `completed` (lowercase, exact).
+- If the row has an acceptance/notes cell, leave it unchanged.
+- Add/replace row in **Completed ✓** table with exactly:
+  `| <task_id> | <task_title> | <YYYY-MM-DD> |`
+  (Do not duplicate entries.)
+
+Markers
+- Print: `START complete_task flow=<flow> phase=<n> task=<id>`
+- Print: `COMPLETE <task_id> date=<YYYY-MM-DD>`
+- Print: `DONE complete_task`
+
+Forbidden
+- Do not change other task rows, DoD, or goals.
 
 Guardrails
 
